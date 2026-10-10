@@ -137,7 +137,7 @@ public class MainController {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    HBox card = new HBox(12);
+                    HBox card = new HBox(10);
                     card.setAlignment(Pos.CENTER_LEFT);
                     card.getStyleClass().add("track-strip");
 
@@ -153,13 +153,13 @@ public class MainController {
                         card.getStyleClass().remove("playing-active");
                     }
 
-                    // Track details
+                    // Track Info
                     VBox info = new VBox(3);
                     Label title = new Label(item.getName());
                     title.getStyleClass().add("track-title");
 
                     String timeStr = FormatUtils.formatDuration(item.getDurationSeconds());
-                    if (isCurrentActive && isPlaying) {
+                    if (isCurrentActive && (isPlaying || isPaused)) {
                         timeStr = FormatUtils.formatDuration(playerService.getCurrentTimeSeconds()) + " / " + timeStr;
                     }
 
@@ -169,35 +169,60 @@ public class MainController {
                     info.getChildren().addAll(title, details);
                     HBox.setHgrow(info, Priority.ALWAYS);
 
-                    // Dedicated Play/Pause Button for THIS recording
-                    String btnText = "▶ ÉCOUTER";
-                    if (isCurrentActive) {
-                        if (isPlaying) btnText = "⏸ PAUSE";
-                        else if (isPaused) btnText = "▶ REPRENDRE";
-                    }
-
-                    Button btnPlay = new Button(btnText);
-                    btnPlay.getStyleClass().add("btn-track-play");
+                    // Dynamic Symbol Buttons
+                    Button btnPlayPause = new Button();
                     if (isCurrentActive && isPlaying) {
-                        btnPlay.getStyleClass().add("btn-track-playing");
+                        btnPlayPause.setText("⏸");
+                        btnPlayPause.setTooltip(new Tooltip("Mettre en pause"));
+                        btnPlayPause.getStyleClass().setAll("btn-symbol-pause");
+                        btnPlayPause.setOnAction(e -> {
+                            playerService.pause();
+                            recordingsListView.refresh();
+                        });
+                    } else if (isCurrentActive && isPaused) {
+                        btnPlayPause.setText("▶");
+                        btnPlayPause.setTooltip(new Tooltip("Reprendre l'écoute"));
+                        btnPlayPause.getStyleClass().setAll("btn-symbol-resume");
+                        btnPlayPause.setOnAction(e -> {
+                            playerService.play();
+                            recordingsListView.refresh();
+                        });
+                    } else {
+                        btnPlayPause.setText("▶");
+                        btnPlayPause.setTooltip(new Tooltip("Écouter la piste"));
+                        btnPlayPause.getStyleClass().setAll("btn-symbol-play");
+                        btnPlayPause.setOnAction(e -> {
+                            recordingsListView.getSelectionModel().select(item);
+                            if (recorderService.getState() != RecordingState.IDLE) {
+                                recorderService.stopRecording();
+                            }
+                            playerService.loadAndPlay(item);
+                            recordingsListView.refresh();
+                        });
                     }
 
-                    btnPlay.setOnAction(e -> {
-                        recordingsListView.getSelectionModel().select(item);
-                        // Stop recording if recording is in progress
-                        if (recorderService.getState() != RecordingState.IDLE) {
-                            recorderService.stopRecording();
-                        }
-                        playerService.togglePlayPause(item);
-                        recordingsListView.refresh();
-                    });
+                    HBox rowActions = new HBox(6);
+                    rowActions.setAlignment(Pos.CENTER_RIGHT);
+                    rowActions.getChildren().add(btnPlayPause);
 
-                    // Delete Button
+                    if (isCurrentActive && (isPlaying || isPaused)) {
+                        Button btnStopTrack = new Button("⏹");
+                        btnStopTrack.setTooltip(new Tooltip("Arrêter la lecture"));
+                        btnStopTrack.getStyleClass().add("btn-symbol-stop");
+                        btnStopTrack.setOnAction(e -> {
+                            playerService.stop();
+                            recordingsListView.refresh();
+                        });
+                        rowActions.getChildren().add(btnStopTrack);
+                    }
+
                     Button btnDel = new Button("🗑");
-                    btnDel.getStyleClass().add("btn-track-delete");
+                    btnDel.setTooltip(new Tooltip("Supprimer cette piste"));
+                    btnDel.getStyleClass().add("btn-symbol-delete");
                     btnDel.setOnAction(e -> confirmAndDelete(item));
+                    rowActions.getChildren().add(btnDel);
 
-                    card.getChildren().addAll(info, btnPlay, btnDel);
+                    card.getChildren().addAll(info, rowActions);
                     setGraphic(card);
                 }
             }

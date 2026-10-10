@@ -249,38 +249,119 @@
     -fx-font-size: 11px;
 }
 
-.btn-track-play {
+/* COMPACT ICON SYMBOL BUTTONS */
+.btn-symbol-play {
     -fx-background-color: #3B82F6;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 11px;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-background-radius: 8px;
-    -fx-padding: 7px 14px;
+    -fx-min-width: 34px;
+    -fx-min-height: 32px;
     -fx-cursor: hand;
 }
 
-.btn-track-play:hover {
+.btn-symbol-play:hover {
     -fx-background-color: #60A5FA;
 }
 
-.btn-track-play.btn-track-playing {
-    -fx-background-color: #10B981;
+.btn-symbol-pause {
+    -fx-background-color: #F59E0B;
     -fx-text-fill: #0F172A;
-    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.4), 10, 0.0, 0, 2);
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-min-width: 34px;
+    -fx-min-height: 32px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(245, 158, 11, 0.4), 8, 0.0, 0, 2);
 }
 
-.btn-track-delete {
+.btn-symbol-pause:hover {
+    -fx-background-color: #FBBF24;
+}
+
+.btn-symbol-resume {
+    -fx-background-color: #10B981;
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-min-width: 34px;
+    -fx-min-height: 32px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.4), 8, 0.0, 0, 2);
+}
+
+.btn-symbol-resume:hover {
+    -fx-background-color: #34D399;
+}
+
+.btn-symbol-stop {
     -fx-background-color: #1E293B;
     -fx-text-fill: #EF4444;
     -fx-font-size: 13px;
+    -fx-font-weight: bold;
     -fx-background-radius: 8px;
     -fx-border-color: #EF4444;
     -fx-border-radius: 8px;
-    -fx-padding: 6px 10px;
+    -fx-min-width: 34px;
+    -fx-min-height: 32px;
     -fx-cursor: hand;
 }
 
-.btn-track-delete:hover {
+.btn-symbol-stop:hover {
     -fx-background-color: #EF4444;
     -fx-text-fill: #FFFFFF;
+}
+
+.btn-symbol-delete {
+    -fx-background-color: #1E293B;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #334155;
+    -fx-border-radius: 8px;
+    -fx-min-width: 34px;
+    -fx-min-height: 32px;
+    -fx-cursor: hand;
+}
+
+.btn-symbol-delete:hover {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #EF4444;
+}
+
+/* --- SCROLLBAR RESTYLING --- */
+.track-listview .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-padding: -10px;
+    -fx-pref-height: 0px;
+}
+
+.track-listview .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.track-listview .scroll-bar:vertical .track {
+    -fx-background-color: #0F172A;
+    -fx-background-radius: 4px;
+}
+
+.track-listview .scroll-bar:vertical .thumb {
+    -fx-background-color: #334155;
+    -fx-background-radius: 4px;
+}
+
+.track-listview .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #3B82F6;
+}
+
+.track-listview .scroll-bar:vertical .increment-button,
+.track-listview .scroll-bar:vertical .decrement-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-pref-height: 0px;
 }

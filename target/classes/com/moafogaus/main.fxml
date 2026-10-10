@@ -13,7 +13,7 @@
 <?import com.moafogaus.ui.WaveformCanvas?>
 <?import com.moafogaus.ui.VUMeter?>
 
-<BorderPane prefHeight="660.0" prefWidth="1050.0" stylesheets="@styles.css" styleClass="main-root" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.moafogaus.controller.MainController">
+<BorderPane prefHeight="660.0" prefWidth="1080.0" stylesheets="@styles.css" styleClass="main-root" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.moafogaus.controller.MainController">
 
     <!-- HEADER: BRAND & AUDIO DECK CONFIG -->
     <top>
@@ -74,19 +74,19 @@
 
                 <!-- Waveform Canvas & VU Display -->
                 <VBox alignment="CENTER" spacing="10.0" styleClass="waveform-deck" VBox.vgrow="ALWAYS">
-                    <WaveformCanvas fx:id="waveformCanvas" height="190.0" width="460.0" HBox.hgrow="ALWAYS" />
-                    <VUMeter fx:id="vuMeter" height="10.0" width="440.0" />
+                    <WaveformCanvas fx:id="waveformCanvas" height="190.0" width="420.0" HBox.hgrow="ALWAYS" />
+                    <VUMeter fx:id="vuMeter" height="10.0" width="400.0" />
                 </VBox>
 
                 <!-- Giant Tactile Studio Buttons -->
                 <HBox alignment="CENTER" spacing="22.0">
-                    <Button fx:id="recordButton" onAction="#onRecordAction" prefHeight="64.0" prefWidth="230.0" styleClass="btn-rec-studio" text="🎙 DÉMARRER" />
+                    <Button fx:id="recordButton" onAction="#onRecordAction" prefHeight="64.0" prefWidth="220.0" styleClass="btn-rec-studio" text="🎙 DÉMARRER" />
                     <Button fx:id="stopButton" onAction="#onStopRecordAction" prefHeight="64.0" prefWidth="140.0" styleClass="btn-stop-studio" text="⏹ ARRÊTER" />
                 </HBox>
             </VBox>
 
-            <!-- RIGHT CONSOLE: EXPANDED DIGITAL TRACK RACK -->
-            <VBox prefWidth="450.0" spacing="14.0" styleClass="track-rack-card">
+            <!-- RIGHT CONSOLE: EXPANDED DIGITAL TRACK RACK (500px) -->
+            <VBox prefWidth="500.0" spacing="14.0" styleClass="track-rack-card">
                 <padding>
                     <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
                 </padding>
@@ -95,7 +95,7 @@
                 <HBox alignment="CENTER_LEFT">
                     <VBox>
                         <Label styleClass="rack-title" text="ENREGISTREMENT ET ÉCOUTE DIRECTE" />
-                        <Label styleClass="rack-subtitle" text="CLIQUEZ SUR ÉCOUTER POUR DÉCLANCHER LA LECTURE" />
+                        <Label styleClass="rack-subtitle" text="CLIQUEZ SUR ÉCOUTER POUR DÉCLENCHER LA LECTURE" />
                     </VBox>
                     <Region HBox.hgrow="ALWAYS" />
                     <Button onAction="#onOpenFolderAction" styleClass="btn-rack-folder" text="📂">
@@ -103,7 +103,7 @@
                     </Button>
                 </HBox>
 
-                <!-- Track ListView -->
+                <!-- Track ListView without horizontal scroll -->
                 <ListView fx:id="recordingsListView" styleClass="track-listview" VBox.vgrow="ALWAYS" />
             </VBox>
         </HBox>
