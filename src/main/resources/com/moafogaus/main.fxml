@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import com.moafogaus.ui.WaveformCanvas?>
+<?import com.moafogaus.ui.VUMeter?>
+
+<BorderPane prefHeight="660.0" prefWidth="1050.0" stylesheets="@styles.css" styleClass="main-root" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.moafogaus.controller.MainController">
+
+    <!-- HEADER: BRAND & AUDIO DECK CONFIG -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18.0" styleClass="studio-header">
+            <padding>
+                <Insets top="16.0" right="28.0" bottom="16.0" left="28.0" />
+            </padding>
+
+            <!-- Brand Logo -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="brand-badge">
+                <Label styleClass="brand-icon" text="🎙" />
+                <VBox alignment="CENTER_LEFT">
+                    <Label styleClass="brand-title" text="VOCALIS" />
+                    <Label styleClass="brand-tagline" text="STUDIO CONSOLE" />
+                </VBox>
+            </HBox>
+
+            <Region styleClass="header-divider" />
+
+            <!-- Mic Input Pill -->
+            <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="glass-pill">
+                <Label styleClass="pill-label" text="MICRO :" />
+                <ComboBox fx:id="deviceComboBox" prefWidth="210.0" styleClass="combo-glass" />
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Destination Folder Pill -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="glass-pill">
+                <Label styleClass="folder-icon" text="📁" />
+                <VBox alignment="CENTER_LEFT">
+                    <Label styleClass="pill-label" text="DOSSIER DE SORTIE" />
+                    <Label fx:id="folderPathLabel" maxWidth="260.0" styleClass="folder-path" text="/home/user/recordings" />
+                </VBox>
+                <Button fx:id="changeFolderButton" onAction="#onSelectOutputFolderAction" styleClass="btn-pill-action" text="MODIFIER" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- CENTER STUDIO DASHBOARD -->
+    <center>
+        <HBox spacing="24.0">
+            <padding>
+                <Insets top="20.0" right="28.0" bottom="20.0" left="28.0" />
+            </padding>
+
+            <!-- LEFT CONSOLE: MAIN RECORDER -->
+            <VBox alignment="CENTER" spacing="20.0" styleClass="studio-card" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="24.0" right="24.0" bottom="24.0" left="24.0" />
+                </padding>
+
+                <!-- Status Badge -->
+                <Label fx:id="recordingStatusLabel" styleClass="status-badge" text="PRÊT POUR ENREGISTREMENT" />
+
+                <!-- Giant Digital Studio Clock -->
+                <Label fx:id="timerLabel" styleClass="studio-timer" text="00:00:00.0" />
+
+                <!-- Waveform Canvas & VU Display -->
+                <VBox alignment="CENTER" spacing="10.0" styleClass="waveform-deck" VBox.vgrow="ALWAYS">
+                    <WaveformCanvas fx:id="waveformCanvas" height="190.0" width="460.0" HBox.hgrow="ALWAYS" />
+                    <VUMeter fx:id="vuMeter" height="10.0" width="440.0" />
+                </VBox>
+
+                <!-- Giant Tactile Studio Buttons -->
+                <HBox alignment="CENTER" spacing="22.0">
+                    <Button fx:id="recordButton" onAction="#onRecordAction" prefHeight="64.0" prefWidth="230.0" styleClass="btn-rec-studio" text="🎙 DÉMARRER" />
+                    <Button fx:id="stopButton" onAction="#onStopRecordAction" prefHeight="64.0" prefWidth="140.0" styleClass="btn-stop-studio" text="⏹ ARRÊTER" />
+                </HBox>
+            </VBox>
+
+            <!-- RIGHT CONSOLE: EXPANDED DIGITAL TRACK RACK -->
+            <VBox prefWidth="450.0" spacing="14.0" styleClass="track-rack-card">
+                <padding>
+                    <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                </padding>
+
+                <!-- Rack Header -->
+                <HBox alignment="CENTER_LEFT">
+                    <VBox>
+                        <Label styleClass="rack-title" text="ENREGISTREMENT ET ÉCOUTE DIRECTE" />
+                        <Label styleClass="rack-subtitle" text="CLIQUEZ SUR ÉCOUTER POUR DÉCLANCHER LA LECTURE" />
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button onAction="#onOpenFolderAction" styleClass="btn-rack-folder" text="📂">
+                        <tooltip><Tooltip text="Ouvrir le dossier de destination" /></tooltip>
+                    </Button>
+                </HBox>
+
+                <!-- Track ListView -->
+                <ListView fx:id="recordingsListView" styleClass="track-listview" VBox.vgrow="ALWAYS" />
+            </VBox>
+        </HBox>
+    </center>
+
+</BorderPane>

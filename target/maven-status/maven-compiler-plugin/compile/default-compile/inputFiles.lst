@@ -1,0 +1,14 @@
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/controller/MainController.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/App.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/model/RecordingState.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/service/AudioRecorderService.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/service/RecordingManager.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/ui/VUMeter.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/ui/WaveformCanvas.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/service/DeviceManager.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/service/AudioPlayerService.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/model/PlaybackState.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/model/AudioSettings.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/module-info.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/model/AudioRecording.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/util/FormatUtils.java
