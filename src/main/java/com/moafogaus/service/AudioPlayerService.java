@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import javax.sound.sampled.*;
+import java.io.File;
 
 public class AudioPlayerService {
 
@@ -103,14 +104,20 @@ public class AudioPlayerService {
                 loadAndPlay(recording);
             }
         } else {
-            // New recording selected: stop previous playback completely and load new one
             loadAndPlay(recording);
         }
     }
 
     public synchronized void loadAndPlay(AudioRecording recording) {
         closeClip();
-        if (recording == null || recording.getFile() == null || !recording.getFile().exists()) {
+        if (recording == null || recording.getFile() == null) {
+            state.set(PlaybackState.STOPPED);
+            currentRecording.set(null);
+            return;
+        }
+
+        File absFile = recording.getFile().getAbsoluteFile();
+        if (!absFile.exists()) {
             state.set(PlaybackState.STOPPED);
             currentRecording.set(null);
             return;
@@ -120,9 +127,12 @@ public class AudioPlayerService {
         totalDurationSeconds.set(recording.getDurationSeconds());
 
         try {
-            AudioInputStream ais = AudioSystem.getAudioInputStream(recording.getFile());
-            clip = AudioSystem.getClip();
-            clip.open(ais);
+            AudioInputStream ais = AudioSystem.getAudioInputStream(absFile);
+            clip = createCompatibleClip(absFile, ais);
+
+            if (clip == null) {
+                throw new IllegalStateException("Aucun périphérique de sortie audio compatible n'a été trouvé.");
+            }
 
             clip.addLineListener(event -> {
                 if (event.getType() == LineEvent.Type.STOP) {
@@ -142,6 +152,26 @@ public class AudioPlayerService {
             state.set(PlaybackState.STOPPED);
             currentRecording.set(null);
         }
+    }
+
+    private Clip createCompatibleClip(File absFile, AudioInputStream ais) {
+        Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+        for (Mixer.Info info : mixers) {
+            try {
+                AudioInputStream freshStream = AudioSystem.getAudioInputStream(absFile);
+                Clip c = AudioSystem.getClip(info);
+                c.open(freshStream);
+                return c;
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Clip c = AudioSystem.getClip();
+            c.open(ais);
+            return c;
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     public synchronized void play() {
