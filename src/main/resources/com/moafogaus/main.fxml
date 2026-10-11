@@ -24,7 +24,7 @@
 
             <!-- Brand Logo -->
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="brand-badge">
-                <Label styleClass="brand-icon" text="🎙" />
+                <Label fx:id="brandIconLabel" styleClass="brand-icon" text="" />
                 <VBox alignment="CENTER_LEFT">
                     <Label styleClass="brand-title" text="VOCALIS" />
                     <Label styleClass="brand-tagline" text="STUDIO CONSOLE" />
@@ -43,7 +43,6 @@
 
             <!-- Destination Folder Pill -->
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="glass-pill">
-                <Label styleClass="folder-icon" text="📁" />
                 <VBox alignment="CENTER_LEFT">
                     <Label styleClass="pill-label" text="DOSSIER DE SORTIE" />
                     <Label fx:id="folderPathLabel" maxWidth="260.0" styleClass="folder-path" text="/home/user/recordings" />
@@ -80,8 +79,8 @@
 
                 <!-- Giant Tactile Studio Buttons -->
                 <HBox alignment="CENTER" spacing="22.0">
-                    <Button fx:id="recordButton" onAction="#onRecordAction" prefHeight="64.0" prefWidth="220.0" styleClass="btn-rec-studio" text="🎙 DÉMARRER" />
-                    <Button fx:id="stopButton" onAction="#onStopRecordAction" prefHeight="64.0" prefWidth="140.0" styleClass="btn-stop-studio" text="⏹ ARRÊTER" />
+                    <Button fx:id="recordButton" onAction="#onRecordAction" prefHeight="64.0" prefWidth="220.0" styleClass="btn-rec-studio" text=" DÉMARRER" />
+                    <Button fx:id="stopButton" onAction="#onStopRecordAction" prefHeight="64.0" prefWidth="140.0" styleClass="btn-stop-studio" text=" ARRÊTER" />
                 </HBox>
             </VBox>
 
@@ -98,12 +97,12 @@
                         <Label styleClass="rack-subtitle" text="CLIQUEZ SUR ÉCOUTER POUR DÉCLENCHER LA LECTURE" />
                     </VBox>
                     <Region HBox.hgrow="ALWAYS" />
-                    <Button onAction="#onOpenFolderAction" styleClass="btn-rack-folder" text="📂">
+                    <Button fx:id="openFolderHeaderButton" onAction="#onOpenFolderAction" styleClass="btn-rack-folder" text="">
                         <tooltip><Tooltip text="Ouvrir le dossier de destination" /></tooltip>
                     </Button>
                 </HBox>
 
-                <!-- Track ListView without horizontal scroll -->
+                <!-- Track ListView -->
                 <ListView fx:id="recordingsListView" styleClass="track-listview" VBox.vgrow="ALWAYS" />
             </VBox>
         </HBox>

@@ -11,6 +11,7 @@ import com.moafogaus.service.RecordingManager;
 import com.moafogaus.ui.VUMeter;
 import com.moafogaus.ui.WaveformCanvas;
 import com.moafogaus.util.FormatUtils;
+import com.moafogaus.util.IconUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -27,7 +28,9 @@ import java.util.Optional;
 
 public class MainController {
 
-    // Header Controls
+    // Header Controls & Brand
+    @FXML private Label brandIconLabel;
+    @FXML private Button openFolderHeaderButton;
     @FXML private ComboBox<Mixer.Info> deviceComboBox;
     @FXML private Label folderPathLabel;
     @FXML private Button changeFolderButton;
@@ -53,11 +56,23 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        setupBrandAndIcons();
         setupDeviceComboBox();
         setupOutputFolderDisplay();
         setupRecordingsListView();
         setupAudioRecorderListeners();
         setupAudioPlayerListeners();
+    }
+
+    private void setupBrandAndIcons() {
+        if (brandIconLabel != null) {
+            brandIconLabel.setGraphic(IconUtils.createMicrophoneIcon("#3B82F6", 24));
+            brandIconLabel.setText("");
+        }
+        if (openFolderHeaderButton != null) {
+            openFolderHeaderButton.setGraphic(IconUtils.createFolderIcon("#94A3B8", 16));
+            openFolderHeaderButton.setText("");
+        }
     }
 
     private void setupDeviceComboBox() {
@@ -144,6 +159,7 @@ public class MainController {
                     boolean isCurrentActive = (playerService.getCurrentRecording() == item);
                     boolean isPlaying = playerService.isPlaying(item);
                     boolean isPaused = playerService.isPaused(item);
+                    boolean isRecordingActive = (recorderService.getState() != RecordingState.IDLE);
 
                     if (isCurrentActive && (isPlaying || isPaused)) {
                         if (!card.getStyleClass().contains("playing-active")) {
@@ -169,10 +185,16 @@ public class MainController {
                     info.getChildren().addAll(title, details);
                     HBox.setHgrow(info, Priority.ALWAYS);
 
-                    // Dynamic Symbol Buttons
+                    // Dynamic Play / Pause Button
                     Button btnPlayPause = new Button();
+                    btnPlayPause.setDisable(isRecordingActive);
+
+                    if (isRecordingActive) {
+                        btnPlayPause.setTooltip(new Tooltip("Lecture désactivée pendant l'enregistrement micro"));
+                    }
+
                     if (isCurrentActive && isPlaying) {
-                        btnPlayPause.setText("⏸");
+                        btnPlayPause.setGraphic(IconUtils.createPauseIcon("#0F172A", 14));
                         btnPlayPause.setTooltip(new Tooltip("Mettre en pause"));
                         btnPlayPause.getStyleClass().setAll("btn-symbol-pause");
                         btnPlayPause.setOnAction(e -> {
@@ -180,7 +202,7 @@ public class MainController {
                             recordingsListView.refresh();
                         });
                     } else if (isCurrentActive && isPaused) {
-                        btnPlayPause.setText("▶");
+                        btnPlayPause.setGraphic(IconUtils.createPlayIcon("#0F172A", 14));
                         btnPlayPause.setTooltip(new Tooltip("Reprendre l'écoute"));
                         btnPlayPause.getStyleClass().setAll("btn-symbol-resume");
                         btnPlayPause.setOnAction(e -> {
@@ -188,14 +210,11 @@ public class MainController {
                             recordingsListView.refresh();
                         });
                     } else {
-                        btnPlayPause.setText("▶");
+                        btnPlayPause.setGraphic(IconUtils.createPlayIcon("#FFFFFF", 14));
                         btnPlayPause.setTooltip(new Tooltip("Écouter la piste"));
                         btnPlayPause.getStyleClass().setAll("btn-symbol-play");
                         btnPlayPause.setOnAction(e -> {
                             recordingsListView.getSelectionModel().select(item);
-                            if (recorderService.getState() != RecordingState.IDLE) {
-                                recorderService.stopRecording();
-                            }
                             playerService.loadAndPlay(item);
                             recordingsListView.refresh();
                         });
@@ -205,20 +224,25 @@ public class MainController {
                     rowActions.setAlignment(Pos.CENTER_RIGHT);
                     rowActions.getChildren().add(btnPlayPause);
 
-                    if (isCurrentActive && (isPlaying || isPaused)) {
-                        Button btnStopTrack = new Button("⏹");
-                        btnStopTrack.setTooltip(new Tooltip("Arrêter la lecture"));
-                        btnStopTrack.getStyleClass().add("btn-symbol-stop");
-                        btnStopTrack.setOnAction(e -> {
-                            playerService.stop();
-                            recordingsListView.refresh();
-                        });
-                        rowActions.getChildren().add(btnStopTrack);
-                    }
+                    // Permanent Instant-Stop Button (⏹)
+                    Button btnStopTrack = new Button();
+                    boolean canStopThisTrack = isCurrentActive && (isPlaying || isPaused);
+                    btnStopTrack.setGraphic(IconUtils.createStopIcon(canStopThisTrack ? "#EF4444" : "#64748B", 14));
+                    btnStopTrack.setTooltip(new Tooltip("Arrêter la lecture net"));
+                    btnStopTrack.getStyleClass().add("btn-symbol-stop");
+                    btnStopTrack.setDisable(isRecordingActive || !canStopThisTrack);
+                    btnStopTrack.setOnAction(e -> {
+                        playerService.stop();
+                        recordingsListView.refresh();
+                    });
+                    rowActions.getChildren().add(btnStopTrack);
 
-                    Button btnDel = new Button("🗑");
+                    // Delete Button
+                    Button btnDel = new Button();
+                    btnDel.setGraphic(IconUtils.createTrashIcon("#EF4444", 14));
                     btnDel.setTooltip(new Tooltip("Supprimer cette piste"));
                     btnDel.getStyleClass().add("btn-symbol-delete");
+                    btnDel.setDisable(isRecordingActive);
                     btnDel.setOnAction(e -> confirmAndDelete(item));
                     rowActions.getChildren().add(btnDel);
 
@@ -260,21 +284,26 @@ public class MainController {
         recorderService.stateProperty().addListener((obs, oldVal, newState) -> Platform.runLater(() -> {
             switch (newState) {
                 case IDLE:
-                    recordButton.setText("🎙 DÉMARRER");
+                    recordButton.setText(" DÉMARRER");
+                    recordButton.setGraphic(IconUtils.createMicrophoneIcon("#FFFFFF", 18));
                     recordButton.getStyleClass().removeAll("btn-rec-active", "btn-rec-paused");
                     recordingStatusLabel.setText("PRÊT POUR ENREGISTREMENT");
                     recordingStatusLabel.setStyle("-fx-text-fill: #10B981;");
                     stopButton.setDisable(true);
+                    stopButton.setGraphic(IconUtils.createStopIcon("#64748B", 16));
                     deviceComboBox.setDisable(false);
                     changeFolderButton.setDisable(false);
                     waveformCanvas.setActive(false);
                     waveformCanvas.setPaused(false);
                     vuMeter.setLevel(0);
                     vuMeter.setPaused(false);
+                    recordingsListView.refresh();
                     break;
 
                 case RECORDING:
-                    recordButton.setText("⏸ PAUSE");
+                    playerService.stop(); // Stop any audio playback when starting recording
+                    recordButton.setText(" PAUSE");
+                    recordButton.setGraphic(IconUtils.createPauseIcon("#0F172A", 18));
                     recordButton.getStyleClass().removeAll("btn-rec-paused");
                     if (!recordButton.getStyleClass().contains("btn-rec-active")) {
                         recordButton.getStyleClass().add("btn-rec-active");
@@ -282,15 +311,18 @@ public class MainController {
                     recordingStatusLabel.setText("🔴 ENREGISTREMENT EN COURS...");
                     recordingStatusLabel.setStyle("-fx-text-fill: #EF4444;");
                     stopButton.setDisable(false);
+                    stopButton.setGraphic(IconUtils.createStopIcon("#F1F5F9", 16));
                     deviceComboBox.setDisable(true);
                     changeFolderButton.setDisable(true);
                     waveformCanvas.setActive(true);
                     waveformCanvas.setPaused(false);
                     vuMeter.setPaused(false);
+                    recordingsListView.refresh();
                     break;
 
                 case PAUSED:
-                    recordButton.setText("▶ REPRENDRE");
+                    recordButton.setText(" REPRENDRE");
+                    recordButton.setGraphic(IconUtils.createPlayIcon("#0F172A", 18));
                     recordButton.getStyleClass().removeAll("btn-rec-active");
                     if (!recordButton.getStyleClass().contains("btn-rec-paused")) {
                         recordButton.getStyleClass().add("btn-rec-paused");
@@ -299,6 +331,7 @@ public class MainController {
                     recordingStatusLabel.setStyle("-fx-text-fill: #F59E0B;");
                     waveformCanvas.setPaused(true);
                     vuMeter.setPaused(true);
+                    recordingsListView.refresh();
                     break;
             }
         }));

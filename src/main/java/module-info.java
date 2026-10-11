@@ -3,6 +3,9 @@ module com.moafogaus {
     requires javafx.fxml;
     requires javafx.media;
     requires java.desktop;
+    requires org.kordamp.ikonli.core;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.feather;
 
     opens com.moafogaus to javafx.fxml;
     opens com.moafogaus.controller to javafx.fxml;

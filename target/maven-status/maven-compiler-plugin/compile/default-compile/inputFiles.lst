@@ -6,6 +6,7 @@
 /media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/ui/VUMeter.java
 /media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/ui/WaveformCanvas.java
 /media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/service/DeviceManager.java
+/media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/util/IconUtils.java
 /media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/service/AudioPlayerService.java
 /media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/model/PlaybackState.java
 /media/edithson/Saves/Projets/JavaFX_mvn/recorder/src/main/java/com/moafogaus/model/AudioSettings.java
