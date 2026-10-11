@@ -23,6 +23,14 @@ public class App extends Application {
         stage.setTitle("Vocalis Studio - Enregistreur Audio");
         stage.setMinWidth(900);
         stage.setMinHeight(600);
+
+        try {
+            var iconStream = App.class.getResourceAsStream("icon.png");
+            if (iconStream != null) {
+                stage.getIcons().add(new javafx.scene.image.Image(iconStream));
+            }
+        } catch (Exception ignored) {}
+
         stage.setScene(scene);
         stage.show();
     }

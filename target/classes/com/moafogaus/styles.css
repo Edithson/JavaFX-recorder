@@ -256,8 +256,15 @@
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-background-radius: 8px;
-    -fx-min-width: 34px;
-    -fx-min-height: 32px;
+    -fx-min-width: 36px;
+    -fx-pref-width: 36px;
+    -fx-max-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-height: 36px;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
     -fx-cursor: hand;
 }
 
@@ -271,8 +278,15 @@
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-background-radius: 8px;
-    -fx-min-width: 34px;
-    -fx-min-height: 32px;
+    -fx-min-width: 36px;
+    -fx-pref-width: 36px;
+    -fx-max-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-height: 36px;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
     -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(245, 158, 11, 0.4), 8, 0.0, 0, 2);
 }
@@ -287,8 +301,15 @@
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-background-radius: 8px;
-    -fx-min-width: 34px;
-    -fx-min-height: 32px;
+    -fx-min-width: 36px;
+    -fx-pref-width: 36px;
+    -fx-max-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-height: 36px;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
     -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.4), 8, 0.0, 0, 2);
 }
@@ -305,8 +326,15 @@
     -fx-background-radius: 8px;
     -fx-border-color: #EF4444;
     -fx-border-radius: 8px;
-    -fx-min-width: 34px;
-    -fx-min-height: 32px;
+    -fx-min-width: 36px;
+    -fx-pref-width: 36px;
+    -fx-max-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-height: 36px;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
     -fx-cursor: hand;
 }
 
@@ -322,8 +350,15 @@
     -fx-background-radius: 8px;
     -fx-border-color: #334155;
     -fx-border-radius: 8px;
-    -fx-min-width: 34px;
-    -fx-min-height: 32px;
+    -fx-min-width: 36px;
+    -fx-pref-width: 36px;
+    -fx-max-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-height: 36px;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
     -fx-cursor: hand;
 }
 

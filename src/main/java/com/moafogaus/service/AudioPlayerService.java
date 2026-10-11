@@ -71,17 +71,17 @@ public class AudioPlayerService {
     }
 
     public boolean isPlaying(AudioRecording recording) {
-        return recording != null && currentRecording.get() == recording && state.get() == PlaybackState.PLAYING;
+        return recording != null && currentRecording.get() != null && currentRecording.get().equals(recording) && state.get() == PlaybackState.PLAYING;
     }
 
     public boolean isPaused(AudioRecording recording) {
-        return recording != null && currentRecording.get() == recording && state.get() == PlaybackState.PAUSED;
+        return recording != null && currentRecording.get() != null && currentRecording.get().equals(recording) && state.get() == PlaybackState.PAUSED;
     }
 
     public synchronized void togglePlayPause(AudioRecording recording) {
         if (recording == null) return;
 
-        if (currentRecording.get() == recording) {
+        if (currentRecording.get() != null && currentRecording.get().equals(recording)) {
             if (state.get() == PlaybackState.PLAYING) {
                 pause();
             } else if (state.get() == PlaybackState.PAUSED) {
@@ -110,7 +110,12 @@ public class AudioPlayerService {
 
         isStopped = false;
         isPaused = false;
-        state.set(PlaybackState.PLAYING);
+        
+        if (Platform.isFxApplicationThread()) {
+            state.set(PlaybackState.PLAYING);
+        } else {
+            Platform.runLater(() -> state.set(PlaybackState.PLAYING));
+        }
 
         playerThread = new Thread(() -> streamAudioLoop(absFile), "AudioPlayerStreamThread");
         playerThread.setDaemon(true);
@@ -120,7 +125,11 @@ public class AudioPlayerService {
     public synchronized void play() {
         if (state.get() == PlaybackState.PAUSED) {
             isPaused = false;
-            state.set(PlaybackState.PLAYING);
+            if (Platform.isFxApplicationThread()) {
+                state.set(PlaybackState.PLAYING);
+            } else {
+                Platform.runLater(() -> state.set(PlaybackState.PLAYING));
+            }
         } else if (currentRecording.get() != null) {
             loadAndPlay(currentRecording.get());
         }
@@ -129,13 +138,25 @@ public class AudioPlayerService {
     public synchronized void pause() {
         if (state.get() == PlaybackState.PLAYING) {
             isPaused = true;
-            state.set(PlaybackState.PAUSED);
+            if (Platform.isFxApplicationThread()) {
+                state.set(PlaybackState.PAUSED);
+            } else {
+                Platform.runLater(() -> state.set(PlaybackState.PAUSED));
+            }
         }
     }
 
     public synchronized void stop() {
         isStopped = true;
         isPaused = false;
+
+        if (playerThread != null && playerThread.isAlive()) {
+            try {
+                playerThread.interrupt();
+            } catch (Exception ignored) {
+            }
+        }
+
         if (line != null) {
             try {
                 line.stop();
@@ -145,10 +166,17 @@ public class AudioPlayerService {
             }
             line = null;
         }
-        Platform.runLater(() -> {
+
+        Runnable updateState = () -> {
             state.set(PlaybackState.STOPPED);
             currentTimeSeconds.set(0);
-        });
+        };
+
+        if (Platform.isFxApplicationThread()) {
+            updateState.run();
+        } else {
+            Platform.runLater(updateState);
+        }
     }
 
     private void streamAudioLoop(File file) {
@@ -207,7 +235,9 @@ public class AudioPlayerService {
                 Platform.runLater(() -> currentTimeSeconds.set(sec));
             }
 
-            line.drain();
+            if (!isStopped && line != null && line.isOpen()) {
+                line.drain();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,6 +258,10 @@ public class AudioPlayerService {
     }
 
     private SourceDataLine openCompatibleSourceDataLine(DataLine.Info info, AudioFormat format) {
+        try {
+            return (SourceDataLine) AudioSystem.getLine(info);
+        } catch (Exception ignored) {
+        }
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
         for (Mixer.Info mInfo : mixers) {
             try {
@@ -237,10 +271,6 @@ public class AudioPlayerService {
                 }
             } catch (Exception ignored) {
             }
-        }
-        try {
-            return (SourceDataLine) AudioSystem.getLine(info);
-        } catch (Exception ignored) {
         }
         return null;
     }

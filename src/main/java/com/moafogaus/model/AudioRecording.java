@@ -88,6 +88,22 @@ public class AudioRecording {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AudioRecording that = (AudioRecording) o;
+        if (getFile() != null && that.getFile() != null) {
+            return getFile().getAbsolutePath().equals(that.getFile().getAbsolutePath());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getFile() != null ? getFile().getAbsolutePath().hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return getName();
     }

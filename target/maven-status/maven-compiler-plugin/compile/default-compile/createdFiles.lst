@@ -12,6 +12,7 @@ com/moafogaus/ui/WaveformCanvas$1.class
 module-info.class
 com/moafogaus/App.class
 com/moafogaus/model/RecordingState.class
+com/moafogaus/MainLauncher.class
 com/moafogaus/model/AudioSettings.class
 com/moafogaus/controller/MainController$1.class
 com/moafogaus/service/AudioRecorderService.class

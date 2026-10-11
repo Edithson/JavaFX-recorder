@@ -145,6 +145,42 @@ public class MainController {
         recordingsListView.setItems(recordingManager.getRecordings());
 
         recordingsListView.setCellFactory(lv -> new ListCell<>() {
+            private final HBox card = new HBox(10);
+            private final VBox info = new VBox(3);
+            private final Label title = new Label();
+            private final Label details = new Label();
+            private final Button btnPlayPause = new Button();
+            private final Button btnStopTrack = new Button();
+            private final Button btnDel = new Button();
+            private final HBox rowActions = new HBox(6);
+
+            private final javafx.beans.value.ChangeListener<Number> timeListener = (obs, oldVal, newVal) -> {
+                AudioRecording item = getItem();
+                if (item != null && playerService.getCurrentRecording() != null && playerService.getCurrentRecording().equals(item)) {
+                    if (playerService.getState() != PlaybackState.STOPPED) {
+                        String timeStr = FormatUtils.formatDuration(newVal.doubleValue()) + " / " + FormatUtils.formatDuration(item.getDurationSeconds());
+                        details.setText(timeStr + "  •  " + FormatUtils.formatFileSize(item.getSizeBytes()));
+                    }
+                }
+            };
+
+            {
+                card.setAlignment(Pos.CENTER_LEFT);
+                card.getStyleClass().add("track-strip");
+
+                title.getStyleClass().add("track-title");
+                details.getStyleClass().add("track-meta");
+                info.getChildren().addAll(title, details);
+                HBox.setHgrow(info, Priority.ALWAYS);
+
+                rowActions.setAlignment(Pos.CENTER_RIGHT);
+                rowActions.getChildren().addAll(btnPlayPause, btnStopTrack, btnDel);
+
+                card.getChildren().addAll(info, rowActions);
+
+                playerService.currentTimeSecondsProperty().addListener(timeListener);
+            }
+
             @Override
             protected void updateItem(AudioRecording item, boolean empty) {
                 super.updateItem(item, empty);
@@ -152,41 +188,26 @@ public class MainController {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    HBox card = new HBox(10);
-                    card.setAlignment(Pos.CENTER_LEFT);
-                    card.getStyleClass().add("track-strip");
+                    title.setText(item.getName());
 
-                    boolean isCurrentActive = (playerService.getCurrentRecording() == item);
+                    boolean isCurrentActive = (playerService.getCurrentRecording() != null && playerService.getCurrentRecording().equals(item));
                     boolean isPlaying = playerService.isPlaying(item);
                     boolean isPaused = playerService.isPaused(item);
                     boolean isRecordingActive = (recorderService.getState() != RecordingState.IDLE);
+                    boolean isPlaybackRunning = (playerService.getState() != PlaybackState.STOPPED);
 
                     if (isCurrentActive && (isPlaying || isPaused)) {
                         if (!card.getStyleClass().contains("playing-active")) {
                             card.getStyleClass().add("playing-active");
                         }
+                        String timeStr = FormatUtils.formatDuration(playerService.getCurrentTimeSeconds()) + " / " + FormatUtils.formatDuration(item.getDurationSeconds());
+                        details.setText(timeStr + "  •  " + FormatUtils.formatFileSize(item.getSizeBytes()));
                     } else {
                         card.getStyleClass().remove("playing-active");
+                        details.setText(FormatUtils.formatDuration(item.getDurationSeconds()) + "  •  " + FormatUtils.formatFileSize(item.getSizeBytes()));
                     }
-
-                    // Track Info
-                    VBox info = new VBox(3);
-                    Label title = new Label(item.getName());
-                    title.getStyleClass().add("track-title");
-
-                    String timeStr = FormatUtils.formatDuration(item.getDurationSeconds());
-                    if (isCurrentActive && (isPlaying || isPaused)) {
-                        timeStr = FormatUtils.formatDuration(playerService.getCurrentTimeSeconds()) + " / " + timeStr;
-                    }
-
-                    Label details = new Label(timeStr + "  •  " + FormatUtils.formatFileSize(item.getSizeBytes()));
-                    details.getStyleClass().add("track-meta");
-
-                    info.getChildren().addAll(title, details);
-                    HBox.setHgrow(info, Priority.ALWAYS);
 
                     // Dynamic Play / Pause Button
-                    Button btnPlayPause = new Button();
                     btnPlayPause.setDisable(isRecordingActive);
 
                     if (isRecordingActive) {
@@ -196,7 +217,7 @@ public class MainController {
                     if (isCurrentActive && isPlaying) {
                         btnPlayPause.setGraphic(IconUtils.createPauseIcon("#0F172A", 14));
                         btnPlayPause.setTooltip(new Tooltip("Mettre en pause"));
-                        btnPlayPause.getStyleClass().setAll("btn-symbol-pause");
+                        btnPlayPause.getStyleClass().setAll("button", "btn-symbol-pause");
                         btnPlayPause.setOnAction(e -> {
                             playerService.pause();
                             recordingsListView.refresh();
@@ -204,7 +225,7 @@ public class MainController {
                     } else if (isCurrentActive && isPaused) {
                         btnPlayPause.setGraphic(IconUtils.createPlayIcon("#0F172A", 14));
                         btnPlayPause.setTooltip(new Tooltip("Reprendre l'écoute"));
-                        btnPlayPause.getStyleClass().setAll("btn-symbol-resume");
+                        btnPlayPause.getStyleClass().setAll("button", "btn-symbol-resume");
                         btnPlayPause.setOnAction(e -> {
                             playerService.play();
                             recordingsListView.refresh();
@@ -212,7 +233,7 @@ public class MainController {
                     } else {
                         btnPlayPause.setGraphic(IconUtils.createPlayIcon("#FFFFFF", 14));
                         btnPlayPause.setTooltip(new Tooltip("Écouter la piste"));
-                        btnPlayPause.getStyleClass().setAll("btn-symbol-play");
+                        btnPlayPause.getStyleClass().setAll("button", "btn-symbol-play");
                         btnPlayPause.setOnAction(e -> {
                             recordingsListView.getSelectionModel().select(item);
                             playerService.loadAndPlay(item);
@@ -220,33 +241,24 @@ public class MainController {
                         });
                     }
 
-                    HBox rowActions = new HBox(6);
-                    rowActions.setAlignment(Pos.CENTER_RIGHT);
-                    rowActions.getChildren().add(btnPlayPause);
-
                     // Permanent Instant-Stop Button (⏹)
-                    Button btnStopTrack = new Button();
-                    boolean canStopThisTrack = isCurrentActive && (isPlaying || isPaused);
-                    btnStopTrack.setGraphic(IconUtils.createStopIcon(canStopThisTrack ? "#EF4444" : "#64748B", 14));
+                    boolean canStopActive = (isCurrentActive && isPlaybackRunning);
+                    btnStopTrack.setGraphic(IconUtils.createStopIcon(canStopActive ? "#EF4444" : "#64748B", 14));
                     btnStopTrack.setTooltip(new Tooltip("Arrêter la lecture net"));
-                    btnStopTrack.getStyleClass().add("btn-symbol-stop");
-                    btnStopTrack.setDisable(isRecordingActive || !canStopThisTrack);
+                    btnStopTrack.getStyleClass().setAll("button", "btn-symbol-stop");
+                    btnStopTrack.setDisable(isRecordingActive || !isPlaybackRunning);
                     btnStopTrack.setOnAction(e -> {
                         playerService.stop();
                         recordingsListView.refresh();
                     });
-                    rowActions.getChildren().add(btnStopTrack);
 
                     // Delete Button
-                    Button btnDel = new Button();
                     btnDel.setGraphic(IconUtils.createTrashIcon("#EF4444", 14));
                     btnDel.setTooltip(new Tooltip("Supprimer cette piste"));
-                    btnDel.getStyleClass().add("btn-symbol-delete");
+                    btnDel.getStyleClass().setAll("button", "btn-symbol-delete");
                     btnDel.setDisable(isRecordingActive);
                     btnDel.setOnAction(e -> confirmAndDelete(item));
-                    rowActions.getChildren().add(btnDel);
 
-                    card.getChildren().addAll(info, rowActions);
                     setGraphic(card);
                 }
             }
@@ -342,7 +354,7 @@ public class MainController {
             recordingsListView.refresh();
         }));
 
-        playerService.currentTimeSecondsProperty().addListener((obs, oldVal, newVal) -> Platform.runLater(() -> {
+        playerService.currentRecordingProperty().addListener((obs, oldVal, newVal) -> Platform.runLater(() -> {
             recordingsListView.refresh();
         }));
     }

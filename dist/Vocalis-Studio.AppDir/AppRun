@@ -1,0 +1,11 @@
+#!/bin/sh
+HERE="$(dirname "$(readlink -f "${0}")")"
+export PATH="$HERE/usr/bin:$PATH"
+
+if command -v java >/dev/null 2>&1; then
+    exec java -jar "$HERE/usr/bin/vocalis-studio.jar" "$@"
+else
+    echo "Erreur: Le runtime Java (java) n'est pas détecté."
+    echo "Veuillez vous assurer que java est installé (ex: sudo apt install default-jre)."
+    exit 1
+fi

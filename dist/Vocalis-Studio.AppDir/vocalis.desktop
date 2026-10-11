@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Vocalis Studio
+Comment=Console Studio Enregistreur Audio JavaFX pour Debian
+Exec=AppRun
+Icon=vocalis
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Recorder;
