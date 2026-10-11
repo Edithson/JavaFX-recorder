@@ -1,0 +1,27 @@
+# Maven target build output
+target/
+
+# AppImage build output and AppDir temporary files
+dist/
+*.AppImage
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+
+# Audio test files
+*.wav
+
+# System & Scratch logs
+.system_generated/
+scratch/
